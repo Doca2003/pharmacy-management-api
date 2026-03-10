@@ -62,7 +62,6 @@ pharmasys
 │   └── routers
 │       ├── medicamentos.py
 │       └── pedidos.py
-
 ## Roadmap
 
 ### Completed
