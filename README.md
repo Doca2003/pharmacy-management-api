@@ -46,7 +46,7 @@ http://127.0.0.1:8000/docs
 FastAPI automatically generates interactive documentation using Swagger UI.
 
 ## Project Structure
-'''
+´´´
 pharmasys
 │
 ├── .gitignore
@@ -63,7 +63,7 @@ pharmasys
 │       ├── medicamentos.py
 │       └── pedidos.py
 ## Roadmap
-'''
+´´´
 ### Completed
 - [x] Medication CRUD
 - [x] Order creation
