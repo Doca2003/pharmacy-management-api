@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Pedido, ItemPedido, Medicamento
 from app.schemas import PedidoResponse, ItemPedidoCreate
+from datetime import datetime
+from typing import List, Optional
 
 router = APIRouter(
     prefix="/pedidos",
@@ -12,7 +14,23 @@ router = APIRouter(
 
 def verificar_pedido_aberto(pedido):
     if pedido.status != "ABERTO":
-        raise HTTPException(status_code=404, detail="Pedido já finalizado")
+        raise HTTPException(status_code=400, detail="Pedido já finalizado")
+
+#listar os pedidos
+@router.get("/", response_model=List[PedidoResponse])
+def listar_pedidos(
+    status: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+
+    query = db.query(Pedido)
+
+    if status:
+        query = query.filter(Pedido.status == status)
+
+    pedidos = query.all()
+
+    return pedidos
 
 #criar pedido
 
@@ -37,6 +55,7 @@ def adicionar_item(
     pedido = db.query(Pedido).filter(Pedido.id == pedido_id).first()
     if not pedido:
         raise HTTPException(status_code=404, detail="Pedido não encontrado no sistema")
+    verificar_pedido_aberto(pedido)
 
     #verificar se o medicamento existe
     medicamento = db.query(Medicamento).filter(Medicamento.id == item.medicamento_id).first()
@@ -47,13 +66,19 @@ def adicionar_item(
     if medicamento.quantidade < item.quantidade:
         raise HTTPException(status_code=400, detail="Estoque insuficiente")
     
-    verificar_pedido_aberto(pedido)
+    
 
+    #verificar validade
+    if medicamento.validade < datetime.now():
+        raise HTTPException(status_code=400, detail="Medicamento vencido não pode ser adicionado ao pedido")
+
+    
     #criar item do pedido
     novo_item = ItemPedido(
         pedido_id=pedido.id,
         medicamento_id=item.medicamento_id,
-        quantidade=item.quantidade
+        quantidade=item.quantidade,
+        preco_unitario=medicamento.preco
     )
 
     #baixar estoque automaticamente
@@ -99,12 +124,12 @@ def remover_item_pedido(pedido_id:int, item_id:int, db:Session = Depends(get_db)
 
 
 
-    if not item():
-        raise HTTPException(status_code=404, detail="Pedido não encontrado")
+    if not item:
+        raise HTTPException(status_code=404, detail="Item não encontrado")
     
     #buscar medicamento
 
-    medicamento = db.query(Medicamento).filter(Medicamento.id == item.medicamento_id)
+    medicamento = db.query(Medicamento).filter(Medicamento.id == item.medicamento_id).first()
 
     if not medicamento:
         raise HTTPException(status_code=404, detail="Medicamento não encontrado")
@@ -120,5 +145,28 @@ def remover_item_pedido(pedido_id:int, item_id:int, db:Session = Depends(get_db)
     db.commit()
     return{"mensagem":"Item removido do carrinho e estoque atualizado"}
 
+@router.post("/{pedido_id}/finalizar")
+def finalizar_pedido(pedido_id: int, db: Session = Depends(get_db)):
+
+    pedido = db.query(Pedido).filter(Pedido.id == pedido_id).first()
+
+    if not pedido:
+        raise HTTPException(status_code=404, detail="Pedido não encontrado")
+
+    #verificar se já está finalizado
+    if pedido.status != "ABERTO":
+        raise HTTPException(status_code=400, detail="Pedido já finalizado")
+
+    #verificar se o pedido tem itens
+    if not pedido.itens:
+        raise HTTPException(status_code=400, detail="Pedido não possui itens")
+
+    #finalizar pedido
+    pedido.status = "FINALIZADO"
+    pedido.data_fechamento = datetime.now()
+
+    db.commit()
+
+    return {"mensagem": "Pedido finalizado com sucesso"}
     
     
