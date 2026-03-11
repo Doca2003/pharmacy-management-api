@@ -164,13 +164,19 @@ pharmasys
 * [x] List expired medications
 * [x] Filter orders by status
 
-### Future Improvements
+### In Progress 
 
 * [ ] Authentication (JWT)
-* [ ] Simple frontend interface
-* [ ] Automated tests
-* [ ] Docker support
-* [ ] Cloud deployment
+
+### Future Improvements
+
+
+ * [ ] Pagination
+ * [ ] Filtering
+ * [ ] Automated tests
+ * [ ] Docker support
+ * [ ] Cloud deployment
+ * [ ] Frontend interface
 ---
 
 ## Status
