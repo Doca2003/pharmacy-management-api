@@ -8,17 +8,17 @@ The system manages medication stock, order creation, and automatic inventory upd
 
 ## Features
 
-*Medication CRUD
-*Inventory management
-*Order creation
-*Add and remove items from orders
-*Automatic stock updates
-*Order status control
-*Order total price calculation
-*Order finalization
-*Validation for expired medications
-*List expired medications
-*Filter orders by status
+* Medication CRUD
+* Inventory management
+* Order creation
+* Add and remove items from orders
+* Automatic stock updates
+* Order status control
+* Order total price calculation
+* Order finalization
+* Validation for expired medications
+* List expired medications
+* Filter orders by status
 
 ---
 
