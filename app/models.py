@@ -22,6 +22,7 @@ class Pedido(Base):
     pedido_id = Column(String, default=lambda: str(uuid.uuid4()))
     status = Column(String, default="ABERTO")
     itens = relationship("ItemPedido", back_populates = "pedido")
+    data_fechamento = Column(DateTime, nullable=True)
 
     @property
     def valor_total(self):
