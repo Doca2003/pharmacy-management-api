@@ -167,10 +167,10 @@ pharmasys
 ### Future Improvements
 
 * [ ] Authentication (JWT)
+* [ ] Simple frontend interface
 * [ ] Automated tests
 * [ ] Docker support
 * [ ] Cloud deployment
-
 ---
 
 ## Status
