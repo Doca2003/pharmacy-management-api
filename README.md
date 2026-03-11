@@ -163,7 +163,7 @@ pharmasys
 * [x] Validation for expired medications
 * [x] List expired medications
 * [x] Filter orders by status
-* [ ] 
+
 ### Future Improvements
 
 * [ ] Authentication (JWT)
