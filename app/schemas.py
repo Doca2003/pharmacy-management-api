@@ -25,9 +25,10 @@ class ItemPedidoCreate(BaseModel):
     quantidade: int
 
 class ItemPedidoResponse(BaseModel):
-    id:int
-    medicamento_id:int
-    quantidade:int
+    id: int
+    medicamento_id: int
+    quantidade: int
+    preco_unitario: float
 
     class Config:
         orm_mode = True
@@ -38,9 +39,10 @@ class PedidoCreate(BaseModel):
     pass #nao envia nada ainda
 
 class PedidoResponse(BaseModel):
-    id:int
-    pedido_id:str
-    status:str
+    id: int
+    pedido_id: str
+    status: str
+    valor_total: float
     itens: List[ItemPedidoResponse] = []
 
     class Config:
