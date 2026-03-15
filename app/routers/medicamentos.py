@@ -5,6 +5,7 @@ from app.models import Medicamento
 from app.schemas import MedicamentoCreate, MedicamentoResponse
 from typing import List
 from datetime import datetime
+from app.auth.security import require_role
 
 router = APIRouter(
     prefix="/medicamentos",
@@ -12,7 +13,7 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=MedicamentoResponse)
-def criar_medicamento(med: MedicamentoCreate, db: Session = Depends(get_db)):
+def criar_medicamento(med: MedicamentoCreate, db: Session = Depends(get_db), usuario: str = Depends(require_role("admin"))):
     novo = Medicamento(**med.model_dump())
     db.add(novo)
     db.commit()
@@ -42,7 +43,7 @@ def atualizar_quantidade(med_id: int, quantidade: int, db: Session = Depends(get
 
 
 @router.delete("/{med_id}")
-def deletar_medicamento(med_id: int, db: Session = Depends(get_db)):
+def deletar_medicamento(med_id: int, db: Session = Depends(get_db), usuario: str = Depends(require_role("admin"))):
     med = db.query(Medicamento).filter(Medicamento.id == med_id).first()
 
     if not med:
@@ -63,3 +64,4 @@ def listar_medicamentos_vencidos(db: Session = Depends(get_db)):
     ).all()
 
     return medicamentos_vencidos
+
