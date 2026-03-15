@@ -8,6 +8,7 @@ The system manages medication stock, order creation, and automatic inventory upd
 
 ## Features
 
+### Pharmacy System
 * Medication CRUD
 * Inventory management
 * Order creation
@@ -20,6 +21,12 @@ The system manages medication stock, order creation, and automatic inventory upd
 * List expired medications
 * Filter orders by status
 
+### Authentication & Security
+* User registration
+* JWT authentication
+* Protected endpoints
+* Role-based access control (RBAC)
+* Current authenticated user endpoint (`/users/me`)
 ---
 
 ## Technologies
@@ -29,7 +36,8 @@ The system manages medication stock, order creation, and automatic inventory upd
 * SQLAlchemy
 * Pydantic
 * Uvicorn
-
+* JWT Authentication
+* Passlib (bcrypt)
 ---
 
 ## Installation
@@ -95,6 +103,13 @@ FastAPI automatically generates interactive documentation using Swagger UI.
 | DELETE | `/pedidos/{id}/itens/{item_id}` | Remove item from order |
 | POST   | `/pedidos/{id}/finalizar`       | Finalize order         |
 
+## Authentication
+
+| Method | Endpoint | Description |
+|------|------------------|--------------------------------|
+| POST | `/auth/register` | Register new user              |
+| POST | `/auth/login`    | Login and receive JWT token    |
+| GET  | `/users/me`      | Get current authenticated user |
 ---
 
 ---
@@ -131,7 +146,6 @@ Response:
 pharmasys
 │
 ├── .gitignore
-├── README.md
 ├── requirements.txt
 │
 ├── app
@@ -141,10 +155,14 @@ pharmasys
 │   ├── database.py
 │   ├── main.py
 │   │
+│   ├── auth
+│   │   ├── auth_router.py
+│   │   └── security.py
+│   │
 │   └── routers
-│       ├── __init__.py
 │       ├── medicamentos.py
-│       └── pedidos.py
+│       ├── pedidos.py
+│       └── users_router.py
 ```
 
 ---
@@ -163,20 +181,26 @@ pharmasys
 * [x] Validation for expired medications
 * [x] List expired medications
 * [x] Filter orders by status
+* [x] JWT Authentication
+* [x] User registration
+* [x] Protected endpoints
+* [x] Role-based access control (RBAC)
 
-### In Progress 
+### In Progress
 
-* [ ] Authentication (JWT)
+* [ ] Pagination for medication and order listing
+* [ ] Filtering medications by name and stock level
+* [ ] Filtering orders by date
+* [ ] Admin-only endpoints for medication deletion
 
 ### Future Improvements
 
-
- * [ ] Pagination
- * [ ] Filtering
- * [ ] Automated tests
- * [ ] Docker support
- * [ ] Cloud deployment
- * [ ] Frontend interface
+* [ ] Automated tests with Pytest
+* [ ] Docker containerization
+* [ ] PostgreSQL support
+* [ ] CI/CD pipeline with GitHub Actions
+* [ ] API rate limiting
+* [ ] Logging and monitoring
 ---
 
 ## Status
