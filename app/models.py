@@ -41,3 +41,10 @@ class ItemPedido(Base):
     pedido = relationship("Pedido", back_populates="itens")
     medicamento=relationship("Medicamento")
 
+class Usuario(Base):
+    __tablename__ = "usuarios"
+
+    id = Column(Integer, primary_key=True)
+    username = Column(String, unique=True)
+    senha_hash = Column(String)
+    role = Column(String, default="funcionario")
