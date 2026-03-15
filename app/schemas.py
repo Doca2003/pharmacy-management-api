@@ -15,7 +15,7 @@ class MedicamentoResponse(BaseModel):
     preco:float
 
     class Config:
-        orm_mode=True
+        from_attributes=True
 
 
 #ITENS
@@ -31,7 +31,7 @@ class ItemPedidoResponse(BaseModel):
     preco_unitario: float
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         
 #PEDIDOS
 
@@ -46,4 +46,16 @@ class PedidoResponse(BaseModel):
     itens: List[ItemPedidoResponse] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+
+#USERS
+
+class UsuarioCreate(BaseModel):
+    username: str
+    password: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
