@@ -185,14 +185,14 @@ pharmasys
 * [x] User registration
 * [x] Protected endpoints
 * [x] Role-based access control (RBAC)
+* [x] Pagination for medication and order listing
+* [x] Filtering medications by name and stock level
 
 ### In Progress
 
-* [ ] Pagination for medication and order listing
-* [ ] Filtering medications by name and stock level
 * [ ] Filtering orders by date
 * [ ] Admin-only endpoints for medication deletion
-
+* [ ] Sorting results (price, date, name)
 ### Future Improvements
 
 * [ ] Automated tests with Pytest
