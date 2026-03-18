@@ -164,7 +164,7 @@ Response:
 ]
 }
 
----
+
 ## Project Structure
 
 ```
@@ -192,7 +192,7 @@ pharmasys
 │       └── users_router.py
 ```
 
----
+
 
 ## Roadmap
 
