@@ -174,22 +174,21 @@ pharmasys
 ├── requirements.txt
 │
 ├── app
-│   ├── __init__.py
-│   ├── models.py
-│   ├── schemas.py
-│   ├── database.py
-│   ├── main.py
-│   │
-│   ├── auth
-│   │   ├── auth_router.py
-│   │   ├── security.py
-        └── roles.py
-       
-│   │
-│   └── routers
-│       ├── medicamentos.py
-│       ├── pedidos.py
-│       └── users_router.py
+│ ├── init.py
+│ ├── models.py
+│ ├── schemas.py
+│ ├── database.py
+│ ├── main.py
+│ │
+│ ├── auth
+│ │ ├── auth_router.py
+│ │ ├── security.py
+│ │ └── roles.py
+│ │
+│ └── routers
+│ ├── medicamentos.py
+│ ├── pedidos.py
+│ └── users_router.py
 ```
 
 ---
