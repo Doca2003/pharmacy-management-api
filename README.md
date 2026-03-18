@@ -164,6 +164,8 @@ Response:
 ]
 }
 ---
+
+---
 ## Project Structure
 
 ```
