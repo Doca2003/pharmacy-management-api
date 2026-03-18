@@ -9,22 +9,31 @@ The system manages medication stock, order creation, and automatic inventory upd
 ## Features
 
 ### Pharmacy System
-* Medication CRUD
+* Full medication CRUD operations
 * Inventory management
-* Order creation
+* Order creation and management
 * Add and remove items from orders
-* Automatic stock updates
-* Order status control
+* Automatic stock updates on item operations
+* Order status control (OPEN / FINALIZED)
 * Order total price calculation
 * Order finalization
 * Validation for expired medications
 * List expired medications
-* Filter orders by status
+
+---
+
+### Query & Data Features
+* Filtering orders by status and date
+* Filtering medications by name and stock
+* Sorting results (price, name, date)
+* Pagination support for large datasets
+
+---
 
 ### Authentication & Security
 * User registration
 * JWT authentication
-* Protected endpoints
+* JWT-protected endpoints
 * Role-based access control (RBAC)
 * Current authenticated user endpoint (`/users/me`)
 ---
@@ -36,8 +45,8 @@ The system manages medication stock, order creation, and automatic inventory upd
 * SQLAlchemy
 * Pydantic
 * Uvicorn
-* JWT Authentication
-* Passlib (bcrypt)
+* JWT (JSON Web Tokens)
+* Passlib (bcrypt hashing)
 ---
 
 ## Installation
@@ -82,35 +91,49 @@ FastAPI automatically generates interactive documentation using Swagger UI.
 
 ---
 ## API Endpoints
+
+---
+
 ## Medications
 
-| Method | Endpoint                 | Description              |
-| ------ | ------------------------ | ------------------------ |
-| POST   | `/medicamentos`          | Create a medication      |
-| GET    | `/medicamentos`          | List all medications     |
-| PUT    | `/medicamentos/{id}`     | Update medication stock  |
-| DELETE | `/medicamentos/{id}`     | Delete medication        |
-| GET    | `/medicamentos/vencidos` | List expired medications |
+| Method | Endpoint                 | Description                          |
+|--------|--------------------------|--------------------------------------|
+| POST   | `/medicamentos`          | Create a new medication              |
+| GET    | `/medicamentos`          | List medications (with filters/sort) |
+| PUT    | `/medicamentos/{id}`     | Update medication stock              |
+| DELETE | `/medicamentos/{id}`     | Delete a medication                  |
+| GET    | `/medicamentos/vencidos` | List expired medications             |
+
+---
 
 ## Orders
 
-| Method | Endpoint                        | Description            |
-| ------ | ------------------------------- | ---------------------- |
-| POST   | `/pedidos`                      | Create order           |
-| GET    | `/pedidos`                      | List orders            |
-| GET    | `/pedidos/{id}`                 | Get order details      |
-| POST   | `/pedidos/{id}/itens`           | Add item to order      |
-| DELETE | `/pedidos/{id}/itens/{item_id}` | Remove item from order |
-| POST   | `/pedidos/{id}/finalizar`       | Finalize order         |
+| Method | Endpoint                        | Description                                |
+|--------|-------------------------------- |--------------------------------------------|
+| POST   | `/pedidos`                      | Create a new order                         |
+| GET    | `/pedidos`                      | List orders (filters, sorting, pagination) |
+| GET    | `/pedidos/{id}`                 | Get order details                          |
+| POST   | `/pedidos/{id}/itens`           | Add item to order                          |
+| DELETE | `/pedidos/{id}/itens/{item_id}` | Remove item from order                     |
+| POST   | `/pedidos/{id}/finalizar`       | Finalize order                             |
 
-## Authentication
-
-| Method | Endpoint | Description |
-|------|------------------|--------------------------------|
-| POST | `/auth/register` | Register new user              |
-| POST | `/auth/login`    | Login and receive JWT token    |
-| GET  | `/users/me`      | Get current authenticated user |
 ---
+
+## Users
+
+| Method | Endpoint                   | Description                          |
+|--------|----------------------------|--------------------------------------|
+| GET    | `/users/me`                | Get current authenticated user       |
+| PATCH  | `/users/{user_id}/role`    | Update user role (admin only)        |
+
+---
+
+##  Authentication
+
+| Method | Endpoint         | Description                      |
+|--------|------------------|----------------------------------|
+| POST   | `/auth/register` | Register a new user              |
+| POST   | `/auth/login`    | Authenticate and receive JWT     |
 
 ---
 ## Example Response
@@ -125,26 +148,28 @@ Response:
 
 ```
 {
-  "id": 1,
-  "pedido_id": "7c52f7f5-7d52-4f4a-9c4a-9c89a5e4e8e0",
-  "status": "FINALIZADO",
-  "valor_total": 40.0,
-  "itens": [
-    {
-      "id": 2,
-      "medicamento_id": 1,
-      "quantidade": 2,
-      "preco_unitario": 20.0
-    }
-  ]
+"id": 1,
+"pedido_id": "7c52f7f5-7d52-4f4a-9c4a-9c89a5e4e8e0",
+"status": "FINALIZADO",
+"data_criacao": "2026-03-17T14:30:00",
+"data_fechamento": "2026-03-17T15:10:00",
+"valor_total": 40.0,
+"itens": [
+{
+"id": 2,
+"medicamento_id": 1,
+"quantidade": 2,
+"preco_unitario": 20.0
 }
-```
+]
+}
 ---
 ## Project Structure
 
 ```
 pharmasys
 │
+├── create_admin.py
 ├── .gitignore
 ├── requirements.txt
 │
@@ -157,7 +182,9 @@ pharmasys
 │   │
 │   ├── auth
 │   │   ├── auth_router.py
-│   │   └── security.py
+│   │   ├── security.py
+        └── roles.py
+       
 │   │
 │   └── routers
 │       ├── medicamentos.py
@@ -187,12 +214,17 @@ pharmasys
 * [x] Role-based access control (RBAC)
 * [x] Pagination for medication and order listing
 * [x] Filtering medications by name and stock level
+* [x] Admin-only endpoints for medication deletion
+* [x] Admin and pharmacist only for medication creation
+* [x] Filtering orders by date
+* [x] Sorting results (price, date, name)
 
 ### In Progress
 
-* [ ] Filtering orders by date
-* [ ] Admin-only endpoints for medication deletion
-* [ ] Sorting results (price, date, name)
+- [ ] Low stock alert
+- [ ] Add created_at field to orders
+- [ ] Persist total order value in database
+
 ### Future Improvements
 
 * [ ] Automated tests with Pytest
