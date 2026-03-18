@@ -1,11 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-
+from sqlalchemy import asc, desc
 from app.database import get_db
-from app.models import Pedido, ItemPedido, Medicamento
-from app.schemas import PedidoResponse, ItemPedidoCreate
-from datetime import datetime
-from typing import List, Optional
+from app.models import Pedido, ItemPedido, Medicamento, Usuario
+from app.schemas import PedidoResponse, ItemPedidoCreate, PaginatedPedidos
+from datetime import datetime, timezone
+from app.auth.security import require_roles
+from app.routers.users_router import RoleEnum
+
 
 router = APIRouter(
     prefix="/pedidos",
@@ -16,27 +18,58 @@ def verificar_pedido_aberto(pedido):
     if pedido.status != "ABERTO":
         raise HTTPException(status_code=400, detail="Pedido já finalizado")
 
-#listar os pedidos
-@router.get("/", response_model=List[PedidoResponse])
-def listar_pedidos(
-    status: Optional[str] = None,
-    db: Session = Depends(get_db)
-):
-
+#listar os pedidos(paginacao)
+@router.get("/", response_model=PaginatedPedidos)
+def listar_pedidos(status: str = Query(None),data_inicio: datetime = Query(None),data_fim: datetime = Query(None),sort_by: str = Query("data"),order: str = Query("desc"), page: int = Query(1, ge=1), limit: int = Query(10, ge=1,le=100), db:Session = Depends(get_db)):
     query = db.query(Pedido)
 
     if status:
         query = query.filter(Pedido.status == status)
 
-    pedidos = query.all()
+    if data_inicio:
+        query = query.filter(Pedido.data_fechamento >= data_inicio)
+    
+    if data_fim:
+        query = query.filter(Pedido.data_fechamento <= data_fim)
 
-    return pedidos
+    #ordenacao no banco
+
+    if sort_by == "data":
+        if order == "desc":
+            query = query.order_by(desc(Pedido.data_fechamento))
+        else:
+            query = query.order_by(asc(Pedido.data_fechamento))
+        
+        total = query.count()
+        offset = (page - 1)*limit
+        pedidos = query.offset(offset).limit(limit).all()
+
+    else:
+        #ordenacao por valor total python
+        pedidos = query.all()
+
+        if sort_by == "valor_total":
+            pedidos = sorted(pedidos,key=lambda p: p.valor_total, reverse=(order=="desc"))
+        
+        total = len(pedidos)
+
+        #paginacao manual
+        start = (page-1)*limit
+        end = start+limit
+        pedidos = pedidos[start:end]
+
+    return{
+        "page":page,
+        "limit":limit,
+        "total":total,
+        "data":pedidos
+    }
 
 #criar pedido
 
 @router.post("/", response_model=PedidoResponse)
-def criar_pedido(db: Session = Depends(get_db)):
-    novo_pedido = Pedido()
+def criar_pedido(db: Session = Depends(get_db), usuario: Usuario = Depends(require_roles(RoleEnum.funcionario))):
+    novo_pedido = Pedido(status="ABERTO",data_criacao=datetime.now())
     db.add(novo_pedido)
     db.commit()
     db.refresh(novo_pedido)
@@ -48,7 +81,8 @@ def criar_pedido(db: Session = Depends(get_db)):
 def adicionar_item(
     pedido_id: int,
     item: ItemPedidoCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(require_roles(RoleEnum.funcionario))
 ):
 
     #verificar se o pedido existe
@@ -69,7 +103,7 @@ def adicionar_item(
     
 
     #verificar validade
-    if medicamento.validade < datetime.now():
+    if medicamento.validade < datetime.now(timezone.utc):
         raise HTTPException(status_code=400, detail="Medicamento vencido não pode ser adicionado ao pedido")
 
     
@@ -89,7 +123,7 @@ def adicionar_item(
     db.commit()
     db.refresh(novo_item)
 
-    return novo_item
+    return pedido
 
 
 #obter pedido com itens
@@ -146,7 +180,7 @@ def remover_item_pedido(pedido_id:int, item_id:int, db:Session = Depends(get_db)
     return{"mensagem":"Item removido do carrinho e estoque atualizado"}
 
 @router.post("/{pedido_id}/finalizar")
-def finalizar_pedido(pedido_id: int, db: Session = Depends(get_db)):
+def finalizar_pedido(pedido_id: int, db: Session = Depends(get_db), usuario: Usuario = Depends(require_roles(RoleEnum.funcionario, RoleEnum.admin))):
 
     pedido = db.query(Pedido).filter(Pedido.id == pedido_id).first()
 
