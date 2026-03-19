@@ -1,8 +1,7 @@
-from sqlalchemy import Column, Integer, String, DateTime, Float, Date
+from sqlalchemy import Column, Integer, String, DateTime, Float, Date, func
 from app.database import Base
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-from datetime import datetime
 import uuid
 
 class Medicamento(Base):
@@ -11,9 +10,10 @@ class Medicamento(Base):
     id = Column(Integer, primary_key=True, index=True)
     nome = Column(String)
     lote=Column(String) #nao Integer pois pode conter caracteres no lote
-    validade=Column(Date)
+    validade=Column(DateTime, nullable=False)
     quantidade=Column(Integer)
     preco=Column(Float)
+    descricao = Column(String, nullable=True)
 
 class Pedido(Base):
     __tablename__ = "pedidos"
@@ -23,6 +23,7 @@ class Pedido(Base):
     status = Column(String, default="ABERTO")
     itens = relationship("ItemPedido", back_populates = "pedido")
     data_fechamento = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
 
     @property
     def valor_total(self):
