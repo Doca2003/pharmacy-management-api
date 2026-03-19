@@ -1,14 +1,17 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 from app.auth.roles import RoleEnum
-
+from datetime import datetime
 
 # MEDICAMENTOS
 
 class MedicamentoCreate(BaseModel):
     nome: str
+    descricao: Optional[str] = None
     quantidade: int
+    lote: str
     preco: float
+    validade: datetime
 
 
 class MedicamentoResponse(BaseModel):
@@ -16,6 +19,7 @@ class MedicamentoResponse(BaseModel):
     nome: str
     quantidade: int
     preco: float
+    validade:datetime
 
     class Config:
         from_attributes = True
@@ -62,6 +66,7 @@ class PedidoResponse(BaseModel):
     pedido_id: str
     status: str
     valor_total: float  #funciona com @property
+    created_at: datetime
     itens: List[ItemPedidoResponse] = []
 
     class Config:
