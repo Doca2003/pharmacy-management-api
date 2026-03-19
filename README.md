@@ -148,20 +148,19 @@ Response:
 
 ```
 {
-"id": 1,
-"pedido_id": "7c52f7f5-7d52-4f4a-9c4a-9c89a5e4e8e0",
-"status": "FINALIZADO",
-"data_criacao": "2026-03-17T14:30:00",
-"data_fechamento": "2026-03-17T15:10:00",
-"valor_total": 40.0,
-"itens": [
-{
-"id": 2,
-"medicamento_id": 1,
-"quantidade": 2,
-"preco_unitario": 20.0
-}
-]
+  "id": 1,
+  "pedido_id": "4e69844e-d82b-459b-b4e6-ff687295ff08",
+  "status": "ABERTO",
+  "valor_total": 20,
+  "created_at": "2026-03-19T20:54:02",
+  "itens": [
+    {
+      "id": 1,
+      "medicamento_id": 1,
+      "quantidade": 1,
+      "preco_unitario": 20
+    }
+  ]
 }
 ```
 ---
@@ -218,11 +217,11 @@ pharmasys
 * [x] Admin and pharmacist only for medication creation
 * [x] Filtering orders by date
 * [x] Sorting results (price, date, name)
-
+* [x] Low stock alert
+* [x] Add created_at field to orders
+* [ ] 
 ### In Progress
 
-- [ ] Low stock alert
-- [ ] Add created_at field to orders
 - [ ] Persist total order value in database
 
 ### Future Improvements
