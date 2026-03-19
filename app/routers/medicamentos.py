@@ -112,3 +112,9 @@ def listar_medicamentos_vencidos(db: Session = Depends(get_db), usuario: Usuario
 
     return medicamentos_vencidos
 
+@router.get("/baixo-estoque", response_model=List[MedicamentoResponse])
+def medicamentos_baixo_estoque(limite: int = Query(10, description="Limite de estoque mínimo"),db: Session = Depends(get_db)):
+    medicamentos = db.query(Medicamento).filter(Medicamento.quantidade < limite).all()
+
+    return medicamentos
+
