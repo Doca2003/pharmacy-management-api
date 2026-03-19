@@ -68,8 +68,8 @@ def listar_pedidos(status: str = Query(None),data_inicio: datetime = Query(None)
 #criar pedido
 
 @router.post("/", response_model=PedidoResponse)
-def criar_pedido(db: Session = Depends(get_db), usuario: Usuario = Depends(require_roles(RoleEnum.funcionario))):
-    novo_pedido = Pedido(status="ABERTO",data_criacao=datetime.now())
+def criar_pedido(db: Session = Depends(get_db), usuario: Usuario = Depends(require_roles(RoleEnum.funcionario, RoleEnum.admin))):
+    novo_pedido = Pedido(status="ABERTO")
     db.add(novo_pedido)
     db.commit()
     db.refresh(novo_pedido)
@@ -82,7 +82,7 @@ def adicionar_item(
     pedido_id: int,
     item: ItemPedidoCreate,
     db: Session = Depends(get_db),
-    usuario: Usuario = Depends(require_roles(RoleEnum.funcionario))
+    usuario: Usuario = Depends(require_roles(RoleEnum.funcionario, RoleEnum.admin))
 ):
 
     #verificar se o pedido existe
@@ -102,8 +102,9 @@ def adicionar_item(
     
     
 
+    agora_utc_naive = datetime.now(timezone.utc).replace(tzinfo=None)
     #verificar validade
-    if medicamento.validade < datetime.now(timezone.utc):
+    if medicamento.validade < agora_utc_naive:
         raise HTTPException(status_code=400, detail="Medicamento vencido não pode ser adicionado ao pedido")
 
     
