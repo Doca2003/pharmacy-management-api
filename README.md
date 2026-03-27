@@ -219,10 +219,11 @@ pharmasys
 * [x] Sorting results (price, date, name)
 * [x] Low stock alert
 * [x] Add created_at field to orders
+* [x] Persist total order value in database
 
 ### In Progress
 
-- [ ] Persist total order value in database
+
 
 ### Future Improvements
 
